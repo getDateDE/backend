@@ -1,0 +1,370 @@
+openapi: 3.0.0
+info:
+  title: Test
+  version: '1.0'
+  description: ''
+servers:
+  - url: 'http://localhost:8080/api'
+paths:
+  /user/register:
+    post:
+      summary: ''
+      operationId: register
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+      description: register for user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        description: ''
+      security: []
+  '/institute/{id}/slots':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: ''
+      operationId: deleteInstituteSlot
+      responses:
+        '200':
+          description: OK
+      description: deletes an appointment
+    get:
+      summary: ''
+      operationId: getInstituteSlots
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotsSearchResponse'
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: page
+        - schema:
+            type: integer
+          in: query
+          name: pageSize
+        - schema:
+            type: string
+            example: username='abc';id='abc';age=18
+            pattern: '([\w.]+)([^'']+?)(''(?:.*?)''|[+-]?(?:[0-9]*[.])?[0-9]+)(?:;|$)'
+          in: query
+          name: query
+  /user/slots:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotsSearchResponse'
+      operationId: getSlots
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: page
+        - schema:
+            type: integer
+          in: query
+          name: pageSize
+      description: get all slots of a user
+      security:
+        - Authorization: []
+  /user:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      operationId: getUser
+      description: get user that is active
+      security:
+        - Authorization: []
+  /institute:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstitutesSearchResponse'
+      operationId: getInstitutes
+      description: ''
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: page
+        - schema:
+            type: integer
+          in: query
+          name: pageSize
+        - schema:
+            type: string
+            example: username='abc';id='abc';age=18
+            pattern: '([\w.]+)([^'']+?)(''(?:.*?)''|[+-]?(?:[0-9]*[.])?[0-9]+)(?:;|$)'
+          in: query
+          name: query
+    post:
+      summary: ''
+      operationId: createInstitute
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Institute'
+      description: creates an institute
+    delete:
+      summary: ''
+      operationId: deleteInstitute
+      responses:
+        '200':
+          description: OK
+      description: ''
+      security:
+        - Authorization: []
+  '/institute/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Institute'
+      operationId: getInstitute
+  '/slot/{slotId}/make':
+    parameters:
+      - schema:
+          type: integer
+        name: slotId
+        in: path
+        required: true
+    post:
+      summary: ''
+      operationId: makeAppointment
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - SUCESSFULLY_CREATED
+                  - ALREADY_OCCUPIED
+                  - NOT_AVAILABLE
+      security:
+        - Authorization: []
+  '/slot/{slotId}/clear':
+    parameters:
+      - schema:
+          type: string
+        name: slotId
+        in: path
+        required: true
+    delete:
+      summary: ''
+      operationId: clearSlot
+      responses:
+        '200':
+          description: OK
+  /slot:
+    post:
+      summary: ''
+      operationId: createSlot
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlotCreationRequest'
+      security:
+        - Authorization: []
+  '/institute/{id}/employees':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    post:
+      summary: ''
+      operationId: addEmployee
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddEmployeeRequest'
+components:
+  schemas:
+    RegisterRequest:
+      title: register
+      type: object
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+      required:
+        - firstname
+        - lastname
+        - email
+        - password
+    Slot:
+      title: Slot
+      type: object
+      description: ''
+      properties:
+        dateTimestamp:
+          type: number
+        user:
+          $ref: '#/components/schemas/User'
+        institute:
+          $ref: '#/components/schemas/Institute'
+        durationInMinutes:
+          type: integer
+        employee:
+          type: string
+    SlotCreationRequest:
+      title: SlotCreationRequest
+      type: object
+      properties:
+        dateTimestamp:
+          type: integer
+        durationInMinutes:
+          type: integer
+      required:
+        - dateTimestamp
+        - durationInMinutes
+    Institute:
+      title: Institute
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        phone:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        description:
+          type: string
+          default: ' '
+        employees:
+          type: array
+          items:
+            type: string
+    Address:
+      title: Address
+      type: object
+      properties:
+        city:
+          type: string
+        street:
+          type: string
+        house_number:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+        postal_code:
+          type: string
+    User:
+      title: User
+      type: object
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    RegisterResponse:
+      type: string
+      enum:
+        - SUCCESSFULLY_CREATED
+        - ALREADY_EXISTS
+      title: ''
+    InstitutesSearchResponse:
+      title: InstitutesSearchResponse
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Institute'
+        total:
+          type: integer
+    SlotsSearchResponse:
+      title: SlotsSearchResponse
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Slot'
+        total:
+          type: integer
+    AddEmployeeRequest:
+      title: AddEmployeeRequest
+      type: object
+      properties:
+        name:
+          type: string
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: basic
